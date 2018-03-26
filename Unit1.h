@@ -43,6 +43,8 @@ __published:	// IDE-managed Components
     TLabel *leftPlayerResutls;
     TLabel *rightPlayerResutls;
     TLabel *startMessage;
+    TImage *Image1;
+    TLabel *Label3;
     void __fastcall TimerLeftUpTimer(TObject *Sender);
     void __fastcall TimerLeftDownTimer(TObject *Sender);
     void __fastcall FormKeyDown(TObject *Sender, WORD &Key,
@@ -58,6 +60,8 @@ __published:	// IDE-managed Components
     void __fastcall newGameBtnClick(TObject *Sender);
     void __fastcall newGameClick(TObject *Sender);
     void __fastcall btnShowMsgClick(TObject *Sender);
+    void __fastcall infoClick(TObject *Sender);
+    void __fastcall Image1Click(TObject *Sender);
 private:	// User declarations
 public:		// User declarations
     __fastcall TForm1(TComponent* Owner);

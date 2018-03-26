@@ -3,6 +3,7 @@
 #include <vcl.h>
 #include <stdlib.h>
 #pragma hdrstop
+#include "mmsystem.h"
 
 #include "Unit1.h"
 //---------------------------------------------------------------------------
@@ -30,6 +31,21 @@ AnsiString  setsRightPlayerResults = "";
 int numberOfReflections = 0;
 bool pause = false;
 
+void displayMassage(){
+  AnsiString welcomeMessage;
+  welcomeMessage = "Witaj w grze PingPong \n \nLewy gracz steruje wciskaj¹c klawisze A oraz Z.\n" +
+  welcomeMessage += "Prawy gracz steruje wciskaj¹c strza³ki do góry i w dó³.\n\n" ;
+  welcomeMessage +="Set wygrywa gracz który zdobêdzie jako pierwszy 6 punktów i przewagê co najmniej 2 punktów.\n";
+  welcomeMessage +="Mecz wygrywa gracz który wygra przewag¹ 2 setów lub jako pierwszy wygra 3 sety.\n\n";
+  welcomeMessage += "Dla urozmaicenia zabawy:\n";
+  welcomeMessage += "Kiedy odbijesz pi³kê na œrodku paletki, wówczas zmniejsza siê k¹t odbicia o 1 punkt i pi³ka przyspiesza o 3 punkty (prêdkoœæ maksymalna to 6). \n";
+  welcomeMessage +="Kiedy odbijesz bli¿sz¹ krawêdzi¹, zwiêksza siê k¹t odbicia o 2 punkty i pi³ka zwalnia o 1 punkt (w skali od 0 do 5).\n";
+  welcomeMessage +="Kiedy odbijesz dalsz¹ krawêdzi¹, zmniejsza siê k¹t odbicia o 2 punkty i pi³ka zwalnia o 1 punkt.\n\n";
+  welcomeMessage +="Kiedy pi³eczka osi¹gnie prêdkoœæ 5 lub 6, zmienia kolor na czerwony.\n\n";
+  welcomeMessage += "Mi³ej zabawy!";
+
+  ShowMessage(welcomeMessage);
+}
 void accelerateBall(int ballDirectionY){
   int ballDirectionX = 1;
   if(Form1->ball->Left > Form1->table->Width/2) ballDirectionX = -1;
@@ -103,11 +119,13 @@ void newService(){
   Form1->winerArrow->Visible = false;
   Form1->nextRound->Visible = false;
   Form1->winerLabel->Visible = false;
+  Form1->newGameBtn->Visible = false;
   Form1->TimerBall->Enabled = true;
 
   Form1->speedLabel->Caption = ballSpeed +1;
   Form1->angleLabel->Caption = ballAngle;
   if(ballSpeed <= 3) Form1->ball->Picture->LoadFromFile("img/ball.bmp");
+  sndPlaySound("snd/serve.wav", SND_ASYNC);
 }
 
 void newGame1(){
@@ -138,8 +156,6 @@ void setsControle(){
       "Set wygra³ gracz po lewej stronie \n <<<<<<";
       Form1->winerLabel->Visible = true;
       setsLeftPlayer++;
-      Form1->score->Caption =  IntToStr(pointsLeftPlayer) +
-                       " : " + IntToStr(pointsRightPlayer);
       Form1->leftPlayerSets->Caption =  "Wygrane sety " +
                                      IntToStr(setsLeftPlayer);
       setsLeftPlayerResults += "(" + IntToStr(pointsLeftPlayer) +
@@ -147,6 +163,8 @@ void setsControle(){
       Form1->leftPlayerResutls->Caption = setsLeftPlayerResults;
       pointsLeftPlayer = 0;
       pointsRightPlayer = 0;
+      Form1->score->Caption =  IntToStr(pointsLeftPlayer) +
+                       " : " + IntToStr(pointsRightPlayer);
     }
 
     if( pointsRightPlayer >= 6 && (pointsRightPlayer - pointsLeftPlayer >= 2)){
@@ -154,8 +172,6 @@ void setsControle(){
             "Set wygra³ gracz po prawej stronie \n >>>>>>";
      Form1->winerLabel->Visible = true;
      setsRightPlayer++;
-     Form1->score->Caption =  IntToStr(pointsLeftPlayer) +
-                       " : " + IntToStr(pointsRightPlayer);
      Form1->rightPlayerSets->Caption =  "Wygrane sety "
                                      + IntToStr(setsRightPlayer);
      setsRightPlayerResults += "(" + IntToStr(pointsLeftPlayer) +
@@ -164,6 +180,8 @@ void setsControle(){
       Form1->rightPlayerResutls->Caption = setsRightPlayerResults;
       pointsLeftPlayer = 0;
       pointsRightPlayer = 0;
+      Form1->score->Caption =  IntToStr(pointsLeftPlayer) +
+                       " : " + IntToStr(pointsRightPlayer);
     }
 
 
@@ -259,8 +277,14 @@ void __fastcall TForm1::TimerBallTimer(TObject *Sender)
   ball->Top += y;
 
   // top bottom ball reflection
-  if(ball->Top <= 10) y = -y;
-  if(ball->Top >= table->Height - ball->Height - 10) y = -y;
+  if(ball->Top <= 10) {
+  y = -y;
+  sndPlaySound("snd/reflection.wav", SND_ASYNC);
+  }
+  if(ball->Top >= table->Height - ball->Height - 10){
+   y = -y;
+   sndPlaySound("snd/reflection.wav", SND_ASYNC);
+  }
 
   // reflection form left paddle
   if((ball->Top - (ball->Width/2) >= paddleLeft->Top-10) &&
@@ -278,7 +302,7 @@ void __fastcall TForm1::TimerBallTimer(TObject *Sender)
         }
      //middle part of paddle
      if(ball->Top - (ball->Width/2) > paddleLeft->Top + paddleLeft->Height/3 &&
-        ball->Top - (ball->Width/2) <= paddleLeft->Top + (paddleLeft->Height/3)*2){
+        ball->Top - (ball->Width/2) <= paddleLeft->Top + ((paddleLeft->Height/3)*2)){
         if(y < 0) {
            accelerateBall(-1);
           } else {
@@ -287,7 +311,7 @@ void __fastcall TForm1::TimerBallTimer(TObject *Sender)
 
         }
      //bottom parto of paddle
-     if(ball->Top - (ball->Width/2) > paddleLeft->Top + (paddleLeft->Height/3)*2 &&
+     if(ball->Top - (ball->Width/2) > paddleLeft->Top + ((paddleLeft->Height/3)*2) &&
         ball->Top - (ball->Width/2) <= paddleLeft->Top + paddleLeft->Height +10){
          if(y < 0) {
            increaseAngle(-1);
@@ -295,6 +319,7 @@ void __fastcall TForm1::TimerBallTimer(TObject *Sender)
            reduceAngle(1);
           }
         }
+      sndPlaySound("snd/serve.wav", SND_ASYNC);
       numberOfReflections++;
       numberOfReflectionsLabel->Caption =  IntToStr(numberOfReflections);
     }
@@ -315,7 +340,7 @@ void __fastcall TForm1::TimerBallTimer(TObject *Sender)
         }
      //middle part of paddle
      if(ball->Top - (ball->Width/2) > paddleRight->Top + paddleRight->Height/3 &&
-        ball->Top - (ball->Width/2) <= paddleRight->Top + (paddleRight->Height/3)*2){
+        ball->Top - (ball->Width/2) <= paddleRight->Top + ((paddleRight->Height/3)*2)){
         if(y < 0) {
            accelerateBall(-1);
           } else {
@@ -324,7 +349,7 @@ void __fastcall TForm1::TimerBallTimer(TObject *Sender)
 
         }
      //bottom parto of paddle
-     if(ball->Top - (ball->Width/2) > paddleRight->Top + (paddleRight->Height/3)*2 &&
+     if(ball->Top - (ball->Width/2) > paddleRight->Top + ((paddleRight->Height/3)*2) &&
         ball->Top - (ball->Width/2) <= paddleRight->Top + paddleRight->Height +10){
          if(y < 0) {
            increaseAngle(-1);
@@ -332,6 +357,7 @@ void __fastcall TForm1::TimerBallTimer(TObject *Sender)
            reduceAngle(1);
           }
         }
+      sndPlaySound("snd/serve.wav", SND_ASYNC);  
       numberOfReflections++;
       numberOfReflectionsLabel->Caption =  IntToStr(numberOfReflections);
     }
@@ -387,18 +413,7 @@ void __fastcall TForm1::pauseGameClick(TObject *Sender)
 
 void __fastcall TForm1::FormCreate(TObject *Sender)
 {
-  AnsiString welcomeMessage;
-  welcomeMessage = "Witaj w grze PingPong \n \nLewy gracz steruje wciskaj¹c klawisze A oraz Z.\n" +
-  welcomeMessage += "Prawy gracz steruje wciskaj¹c strza³ki do góry i w dó³.\n\n" ;
-  welcomeMessage +="Set wygrywa gracz który zdobêdzie jako pierwszy 6 punktów i przewagê co najmniej 2 punktów.\n";
-  welcomeMessage +="Mecz wygrywa gracz który wygra przewag¹ 2 setów lub jako pierwszy wygra 3 sety.\n\n";
-  welcomeMessage += "Dla urozmaicenia zabawy:\n";
-  welcomeMessage += "Kiedy odbijesz pi³kê na œrodku paletki, wówczas zmniejsza siê k¹t odbicia o 1 punkt i pi³ka przyspiesza o 3 punkty. \n";
-  welcomeMessage +="Kiedy odbijesz bli¿sz¹ krawêdzi¹ zwiêksza siê k¹t odbicia o 2 punkty i pi³ka zwalnia o 1 stopieñ.\n";
-  welcomeMessage +="Kiedy odbijesz dalsz¹ krawêdzi¹ zmniejsza siê k¹t odbicia o 2 punkty i pi³ka zwalnia o 1 stopieñ.\n\n";
-  welcomeMessage += "Mi³ej zabawy!";
-
-  ShowMessage(welcomeMessage);
+  displayMassage();
   leftPlayerResutls->Caption = "";
   rightPlayerResutls->Caption = "";
 }
@@ -421,6 +436,19 @@ void __fastcall TForm1::newGameClick(TObject *Sender)
 void __fastcall TForm1::btnShowMsgClick(TObject *Sender)
 {
     ShowMessage("Please fill out your Time Sheet before leaving.");
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TForm1::infoClick(TObject *Sender)
+{
+ displayMassage();
+}
+//---------------------------------------------------------------------------
+
+
+void __fastcall TForm1::Image1Click(TObject *Sender)
+{
+ displayMassage();    
 }
 //---------------------------------------------------------------------------
 
