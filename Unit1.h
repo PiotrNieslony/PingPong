@@ -30,8 +30,6 @@ __published:	// IDE-managed Components
     TShape *Shape1;
     TLabel *Label1;
     TLabel *Label2;
-    TLabel *Label3;
-    TLabel *sets;
     TLabel *pauseGame;
     TLabel *newGame;
     TLabel *winerLabel;
@@ -40,6 +38,11 @@ __published:	// IDE-managed Components
     TLabel *speedLabel;
     TLabel *Label6;
     TLabel *angleLabel;
+    TLabel *leftPlayerSets;
+    TLabel *rightPlayerSets;
+    TLabel *leftPlayerResutls;
+    TLabel *rightPlayerResutls;
+    TLabel *startMessage;
     void __fastcall TimerLeftUpTimer(TObject *Sender);
     void __fastcall TimerLeftDownTimer(TObject *Sender);
     void __fastcall FormKeyDown(TObject *Sender, WORD &Key,
