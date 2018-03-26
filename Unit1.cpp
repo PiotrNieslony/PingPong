@@ -30,7 +30,6 @@ AnsiString  setsRightPlayerResults = "";
 int numberOfReflections = 0;
 bool pause = false;
 
-
 void accelerateBall(int ballDirectionY){
   int ballDirectionX = 1;
   if(Form1->ball->Left > Form1->table->Width/2) ballDirectionX = -1;
@@ -42,6 +41,7 @@ void accelerateBall(int ballDirectionY){
   y = movement[ballSpeed][ballAngle][1] * ballDirectionY;
   Form1->speedLabel->Caption = ballSpeed +1;
   Form1->angleLabel->Caption = ballAngle;
+  if(ballSpeed >3) Form1->ball->Picture->LoadFromFile("img/ball_red.bmp");
 }
 
 void increaseAngle(int ballDirectionY){
@@ -55,6 +55,7 @@ void increaseAngle(int ballDirectionY){
   y = movement[ballSpeed][ballAngle][1] * ballDirectionY;
   Form1->speedLabel->Caption = ballSpeed +1;
   Form1->angleLabel->Caption = ballAngle;
+  if(ballSpeed <= 3) Form1->ball->Picture->LoadFromFile("img/ball.bmp");
 }
 
 void reduceAngle(int ballDirectionY){
@@ -71,6 +72,7 @@ void reduceAngle(int ballDirectionY){
   y = movement[ballSpeed][ballAngle][1] * ballDirectionY;
   Form1->speedLabel->Caption = ballSpeed +1;
   Form1->angleLabel->Caption = ballAngle;
+  if(ballSpeed <= 3) Form1->ball->Picture->LoadFromFile("img/ball.bmp");
 }
 
 void newService(){
@@ -105,6 +107,7 @@ void newService(){
 
   Form1->speedLabel->Caption = ballSpeed +1;
   Form1->angleLabel->Caption = ballAngle;
+  if(ballSpeed <= 3) Form1->ball->Picture->LoadFromFile("img/ball.bmp");
 }
 
 void newGame1(){
@@ -134,7 +137,7 @@ void setsControle(){
       Form1->winerLabel->Caption =
       "Set wygra³ gracz po lewej stronie \n <<<<<<";
       Form1->winerLabel->Visible = true;
-      setsRightPlayer++;
+      setsLeftPlayer++;
       Form1->score->Caption =  IntToStr(pointsLeftPlayer) +
                        " : " + IntToStr(pointsRightPlayer);
       Form1->leftPlayerSets->Caption =  "Wygrane sety " +
@@ -384,6 +387,18 @@ void __fastcall TForm1::pauseGameClick(TObject *Sender)
 
 void __fastcall TForm1::FormCreate(TObject *Sender)
 {
+  AnsiString welcomeMessage;
+  welcomeMessage = "Witaj w grze PingPong \n \nLewy gracz steruje wciskaj¹c klawisze A oraz Z.\n" +
+  welcomeMessage += "Prawy gracz steruje wciskaj¹c strza³ki do góry i w dó³.\n\n" ;
+  welcomeMessage +="Set wygrywa gracz który zdobêdzie jako pierwszy 6 punktów i przewagê co najmniej 2 punktów.\n";
+  welcomeMessage +="Mecz wygrywa gracz który wygra przewag¹ 2 setów lub jako pierwszy wygra 3 sety.\n\n";
+  welcomeMessage += "Dla urozmaicenia zabawy:\n";
+  welcomeMessage += "Kiedy odbijesz pi³kê na œrodku paletki, wówczas zmniejsza siê k¹t odbicia o 1 punkt i pi³ka przyspiesza o 3 punkty. \n";
+  welcomeMessage +="Kiedy odbijesz bli¿sz¹ krawêdzi¹ zwiêksza siê k¹t odbicia o 2 punkty i pi³ka zwalnia o 1 stopieñ.\n";
+  welcomeMessage +="Kiedy odbijesz dalsz¹ krawêdzi¹ zmniejsza siê k¹t odbicia o 2 punkty i pi³ka zwalnia o 1 stopieñ.\n\n";
+  welcomeMessage += "Mi³ej zabawy!";
+
+  ShowMessage(welcomeMessage);
   leftPlayerResutls->Caption = "";
   rightPlayerResutls->Caption = "";
 }
@@ -403,10 +418,9 @@ void __fastcall TForm1::newGameClick(TObject *Sender)
 //---------------------------------------------------------------------------
 
 
-
-
-
-
-
-
+void __fastcall TForm1::btnShowMsgClick(TObject *Sender)
+{
+    ShowMessage("Please fill out your Time Sheet before leaving.");
+}
+//---------------------------------------------------------------------------
 
