@@ -36,6 +36,10 @@ __published:	// IDE-managed Components
     TLabel *newGame;
     TLabel *winerLabel;
     TButton *newGameBtn;
+    TLabel *Label4;
+    TLabel *speedLabel;
+    TLabel *Label6;
+    TLabel *angleLabel;
     void __fastcall TimerLeftUpTimer(TObject *Sender);
     void __fastcall TimerLeftDownTimer(TObject *Sender);
     void __fastcall FormKeyDown(TObject *Sender, WORD &Key,

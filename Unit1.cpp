@@ -10,8 +10,17 @@
 #pragma resource "*.dfm"
 TForm1 *Form1;
 
-int x = -6;
-int y = -6;
+ // [speed][angle][x,y]
+int movement[6][6][2] = {{{7, 0},{7, 2},{6, 3},{5, 5},{3, 6},{2, 7}},
+                         {{9, 0},{8, 3},{7, 5},{6, 6},{5, 7},{3, 8}},
+                         {{10,0},{9, 3},{8, 6},{7, 7},{6, 8},{3, 9}},
+                         {{11,0},{10,5},{9, 7},{8, 8},{7, 9},{5,10}},
+                         {{12,0},{11,6},{10,8},{9, 9},{8,10},{6,11}},
+                         {{14,0},{12,7},{11,9},{10,10},{9,11},{7,12}}};
+int x = movement[0][1][0];
+int y = movement[0][1][1];
+int ballSpeed = 0;
+int ballAngle = 3;
 int pointsLeftPlayer = 0;
 int pointsRightPlayer = 0;
 int setsLeftPlayer = 0;
@@ -20,15 +29,46 @@ int numberOfReflections = 0;
 bool pause = false;
 
 
-void accelerateBall(){
+void accelerateBall(int ballDirectionY){
+  int ballDirectionX = 1;
+  if(Form1->ball->Left > Form1->table->Width/2) ballDirectionX = -1;
+  ballSpeed += 2;
+  ballAngle--;
+  if(ballAngle < 0) ballAngle = 0;
+  if(ballSpeed > 5) ballSpeed = 5;
+  x = movement[ballSpeed][ballAngle][0] * ballDirectionX;
+  y = movement[ballSpeed][ballAngle][1] * ballDirectionY;
+  Form1->speedLabel->Caption = ballSpeed +1;
+  Form1->angleLabel->Caption = ballAngle;
 }
 
-void increaseAngle(){
-
+void increaseAngle(int ballDirectionY){
+  int ballDirectionX = 1;
+  if(Form1->ball->Left > Form1->table->Width/2) ballDirectionX = -1;
+  ballAngle += 2;
+  //ballSpeed--;
+  if(ballAngle > 5) ballAngle = 5;
+  if(ballSpeed < 0) ballSpeed = 0;
+  x = movement[ballSpeed][ballAngle][0] * ballDirectionX;
+  y = movement[ballSpeed][ballAngle][1] * ballDirectionY;
+  Form1->speedLabel->Caption = ballSpeed +1;
+  Form1->angleLabel->Caption = ballAngle;
 }
 
-void reduceAngle(){
-
+void reduceAngle(int ballDirectionY){
+  int ballDirectionX = 1;
+  if(Form1->ball->Left > Form1->table->Width/2) ballDirectionX = -1;
+  ballAngle -= 2;
+  //ballSpeed--;
+  if(ballAngle < 0) {
+     ballAngle = 1;
+     ballDirectionY *= -1;
+  }
+  if(ballSpeed < 0) ballSpeed = 0;
+  x = movement[ballSpeed][ballAngle][0] * ballDirectionX;
+  y = movement[ballSpeed][ballAngle][1] * ballDirectionY;
+  Form1->speedLabel->Caption = ballSpeed +1;
+  Form1->angleLabel->Caption = ballAngle;
 }
 
 void newService(){
@@ -42,13 +82,11 @@ void newService(){
   if(Form1->ball->Left < Form1->table->Width/2) {
      Form1->ball->Left = Form1->paddleRight->Left - Form1->ball->Width -10;
      Form1->ball->Top = Form1->paddleRight->Top + Form1->paddleRight->Width/2;
-     x = -abs(x);
 
   // win left player
   } else {
      Form1->ball->Left = (Form1->paddleLeft->Left + Form1->paddleLeft->Width + 10);
      Form1->ball->Top = Form1->paddleLeft->Top + Form1->paddleLeft->Width/2;
-     x = abs(x);
   }
 
   Form1->ball->Visible = true;
@@ -56,8 +94,12 @@ void newService(){
   Form1->nextRound->Visible = false;
   Form1->winerLabel->Visible = false;
   Form1->TimerBall->Enabled = true;
-  x = -6;
-  y = -6;
+  x = movement[0][3][0];
+  y = movement[0][3][1];
+  ballSpeed = 5;
+  ballAngle = 3;
+  Form1->speedLabel->Caption = ballSpeed +1;
+  Form1->angleLabel->Caption = ballAngle;
 }
 
 void newGame1(){
@@ -201,55 +243,77 @@ void __fastcall TForm1::TimerBallTimer(TObject *Sender)
      //top part of paddle
      if(ball->Top - (ball->Width/2) >= paddleLeft->Top-10 &&
         ball->Top - (ball->Width/2) <= paddleLeft->Top + paddleLeft->Height/3){
-         if(y <= 0) {
-            if(abs(x) < 10) y -= 2;
-            if(abs(x) > 4) x += 2;
+         if(y < 0) {
+            reduceAngle(-1);
           } else {
-            y += 2;
-            x += 2;
+            increaseAngle(1);
           }
 
         }
      //middle part of paddle
      if(ball->Top - (ball->Width/2) > paddleLeft->Top + paddleLeft->Height/3 &&
         ball->Top - (ball->Width/2) <= paddleLeft->Top + (paddleLeft->Height/3)*2){
-        if(y <= 0) {
-            y += 1;
-            if(abs(x) < 10) x -= 2;
+        if(y < 0) {
+           accelerateBall(-1);
           } else {
-            y -= 1;
-            x -= 2;
+           accelerateBall(1);
           }
 
         }
      //bottom parto of paddle
      if(ball->Top - (ball->Width/2) > paddleLeft->Top + (paddleLeft->Height/3)*2 &&
         ball->Top - (ball->Width/2) <= paddleLeft->Top + paddleLeft->Height +10){
-         if(y <= 0) {
-            y += 2;
-            if(abs(x) > 4)x += 2;
+         if(y < 0) {
+           increaseAngle(-1);
           } else {
-            if(abs(x) < 10) y -= 2;
-            x += 2;
+           reduceAngle(1);
           }
         }
-    x = -x;
-    numberOfReflections++;
-    numberOfReflectionsLabel->Caption = IntToStr(numberOfReflections);
+      numberOfReflections++;
+      numberOfReflectionsLabel->Caption =  IntToStr(numberOfReflections);
     }
 
   // reflection form right paddle
   if((ball->Top - (ball->Width/2) >= paddleRight->Top -10) &&
      (ball->Top - (ball->Width/2) <= paddleRight->Top + paddleRight->Height +10) &&
      (ball->Left >= paddleRight->Left - ball->Width)){
-    x = -x;
-    numberOfReflections++;
-    numberOfReflectionsLabel->Caption =  IntToStr(numberOfReflections);
+     //top part of paddle
+     if(ball->Top - (ball->Width/2) >= paddleRight->Top-10 &&
+        ball->Top - (ball->Width/2) <= paddleRight->Top + paddleRight->Height/3){
+         if(y < 0) {
+            reduceAngle(-1);
+          } else {
+            increaseAngle(1);
+          }
+
+        }
+     //middle part of paddle
+     if(ball->Top - (ball->Width/2) > paddleRight->Top + paddleRight->Height/3 &&
+        ball->Top - (ball->Width/2) <= paddleRight->Top + (paddleRight->Height/3)*2){
+        if(y < 0) {
+           accelerateBall(-1);
+          } else {
+           accelerateBall(1);
+          }
+
+        }
+     //bottom parto of paddle
+     if(ball->Top - (ball->Width/2) > paddleRight->Top + (paddleRight->Height/3)*2 &&
+        ball->Top - (ball->Width/2) <= paddleRight->Top + paddleRight->Height +10){
+         if(y < 0) {
+           increaseAngle(-1);
+          } else {
+           reduceAngle(1);
+          }
+        }
+      numberOfReflections++;
+      numberOfReflectionsLabel->Caption =  IntToStr(numberOfReflections);
     }
 
+
   //lose
-  if((ball->Left < paddleLeft->Left + paddleLeft->Width -10) ||
-     (ball->Left + ball->Width > paddleRight->Left +10)){
+  if((ball->Left < paddleLeft->Left - paddleLeft->Width) ||
+     (ball->Left + ball->Width > paddleRight->Left + paddleRight->Width)){
      TimerBall->Enabled = false;
      ball->Visible = false;
 
@@ -315,4 +379,6 @@ void __fastcall TForm1::newGameClick(TObject *Sender)
  newGame1();
 }
 //---------------------------------------------------------------------------
+
+
 
