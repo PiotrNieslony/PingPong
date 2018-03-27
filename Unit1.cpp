@@ -57,7 +57,8 @@ void accelerateBall(int ballDirectionY){
   y = movement[ballSpeed][ballAngle][1] * ballDirectionY;
   Form1->speedLabel->Caption = ballSpeed +1;
   Form1->angleLabel->Caption = ballAngle;
-  if(ballSpeed >3) Form1->ball->Picture->LoadFromFile("img/ball_red.bmp");
+  if ( FileExists("img/ball_red.bmp" ) )
+     if(ballSpeed >3) Form1->ball->Picture->LoadFromFile("img/ball_red.bmp");
 }
 
 void increaseAngle(int ballDirectionY){
@@ -71,7 +72,8 @@ void increaseAngle(int ballDirectionY){
   y = movement[ballSpeed][ballAngle][1] * ballDirectionY;
   Form1->speedLabel->Caption = ballSpeed +1;
   Form1->angleLabel->Caption = ballAngle;
-  if(ballSpeed <= 3) Form1->ball->Picture->LoadFromFile("img/ball.bmp");
+  if ( FileExists("img/ball_red.bmp" ) )
+    if(ballSpeed <= 3) Form1->ball->Picture->LoadFromFile("img/ball.bmp");
 }
 
 void reduceAngle(int ballDirectionY){
@@ -88,7 +90,8 @@ void reduceAngle(int ballDirectionY){
   y = movement[ballSpeed][ballAngle][1] * ballDirectionY;
   Form1->speedLabel->Caption = ballSpeed +1;
   Form1->angleLabel->Caption = ballAngle;
-  if(ballSpeed <= 3) Form1->ball->Picture->LoadFromFile("img/ball.bmp");
+  if ( FileExists("img/ball_red.bmp" ) )
+    if(ballSpeed <= 3) Form1->ball->Picture->LoadFromFile("img/ball.bmp");
 }
 
 void newService(){
@@ -124,8 +127,10 @@ void newService(){
 
   Form1->speedLabel->Caption = ballSpeed +1;
   Form1->angleLabel->Caption = ballAngle;
-  if(ballSpeed <= 3) Form1->ball->Picture->LoadFromFile("img/ball.bmp");
-  sndPlaySound("snd/serve.wav", SND_ASYNC);
+  if ( FileExists("img/ball_red.bmp" ) )
+    if(ballSpeed <= 3) Form1->ball->Picture->LoadFromFile("img/ball.bmp");
+  if ( FileExists("snd/serve.wav" ) )
+    sndPlaySound("snd/serve.wav", SND_ASYNC);
 }
 
 void newGame1(){
@@ -279,11 +284,13 @@ void __fastcall TForm1::TimerBallTimer(TObject *Sender)
   // top bottom ball reflection
   if(ball->Top <= 10) {
   y = -y;
-  sndPlaySound("snd/reflection.wav", SND_ASYNC);
+  if ( FileExists("snd/reflection.wav" ))
+      sndPlaySound("snd/reflection.wav", SND_ASYNC);
   }
   if(ball->Top >= table->Height - ball->Height - 10){
    y = -y;
-   sndPlaySound("snd/reflection.wav", SND_ASYNC);
+   if ( FileExists("snd/reflection.wav" ))
+       sndPlaySound("snd/reflection.wav", SND_ASYNC);
   }
 
   // reflection form left paddle
@@ -319,7 +326,8 @@ void __fastcall TForm1::TimerBallTimer(TObject *Sender)
            reduceAngle(1);
           }
         }
-      sndPlaySound("snd/serve.wav", SND_ASYNC);
+      if ( FileExists("snd/serve.wav" ) )
+        sndPlaySound("snd/serve.wav", SND_ASYNC);
       numberOfReflections++;
       numberOfReflectionsLabel->Caption =  IntToStr(numberOfReflections);
     }
@@ -327,7 +335,7 @@ void __fastcall TForm1::TimerBallTimer(TObject *Sender)
   // reflection form right paddle
   if((ball->Top - (ball->Width/2) >= paddleRight->Top -10) &&
      (ball->Top - (ball->Width/2) <= paddleRight->Top + paddleRight->Height +10) &&
-     (ball->Left >= paddleRight->Left - ball->Width)){
+     (ball->Left + ball->Width >= paddleRight->Left )){
      //top part of paddle
      if(ball->Top - (ball->Width/2) >= paddleRight->Top-10 &&
         ball->Top - (ball->Width/2) <= paddleRight->Top + paddleRight->Height/3){
@@ -357,7 +365,8 @@ void __fastcall TForm1::TimerBallTimer(TObject *Sender)
            reduceAngle(1);
           }
         }
-      sndPlaySound("snd/serve.wav", SND_ASYNC);  
+      if ( FileExists("snd/serve.wav" ) )
+          sndPlaySound("snd/serve.wav", SND_ASYNC);
       numberOfReflections++;
       numberOfReflectionsLabel->Caption =  IntToStr(numberOfReflections);
     }
@@ -448,7 +457,7 @@ void __fastcall TForm1::infoClick(TObject *Sender)
 
 void __fastcall TForm1::Image1Click(TObject *Sender)
 {
- displayMassage();    
+ displayMassage();
 }
 //---------------------------------------------------------------------------
 
