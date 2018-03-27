@@ -3,6 +3,6 @@
 
 # But not these files...
 !.gitignore
-!*.cpp
-!*.h
+!main.cpp
+!conver txt file for v0.1 to v0.2.cpp
 

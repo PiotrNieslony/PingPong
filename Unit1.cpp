@@ -33,7 +33,7 @@ bool pause = false;
 
 void displayMassage(){
   AnsiString welcomeMessage;
-  welcomeMessage = "Witaj w grze PingPong \n \nLewy gracz steruje wciskaj¹c klawisze A oraz Z.\n" +
+  welcomeMessage = "Witaj w grze PingPong \n \nLewy gracz steruje wciskaj¹c klawisze A oraz Z.\n";
   welcomeMessage += "Prawy gracz steruje wciskaj¹c strza³ki do góry i w dó³.\n\n" ;
   welcomeMessage +="Set wygrywa gracz który zdobêdzie jako pierwszy 6 punktów i przewagê co najmniej 2 punktów.\n";
   welcomeMessage +="Mecz wygrywa gracz który wygra przewag¹ 2 setów lub jako pierwszy wygra 3 sety.\n\n";
@@ -444,7 +444,7 @@ void __fastcall TForm1::newGameClick(TObject *Sender)
 
 void __fastcall TForm1::btnShowMsgClick(TObject *Sender)
 {
-    ShowMessage("Please fill out your Time Sheet before leaving.");
+    Application->MessageBox("Please fill out your Time Sheet before leaving.", "Info", MB_ICONINFORMATION);
 }
 //---------------------------------------------------------------------------
 
